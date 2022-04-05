@@ -18,6 +18,10 @@ struct Material {
 	sampler2D NormalMap;
 	sampler2D MetallicShininessMap;
 	float     DiscardThreshold;
+	vec3      LightPos;
+	vec3	  WorldNormal;
+	vec3	  WorldPos;
+	int		  Steps;
 };
 // Create a uniform for the material
 uniform Material u_Material;
@@ -42,6 +46,7 @@ void main() {
 		discard;
 	}
 
+
 	// Extract albedo from material, and store shininess
 	albedo_specPower = vec4(albedoColor.rgb, lightingParams.x);
 	
@@ -56,6 +61,25 @@ void main() {
 	// Map [-1, 1] to [0, 1]
 	normal = clamp((normal + 1) / 2.0, 0, 1);
 	normal_metallic = vec4(normal, lightingParams.y);
+
+//	vec3 L = normalize(LightPos - WorldPos);
+//	vec3 V = normalize(view_pos - WorldPos);
+
+//	float dist = length(LightPos - WorldPos);
+//
+//	float diffuse = max(0, dot(L, WorldNormal));
+//	vec3 diffuseOut = (diffuse * color) / (dist * dist);
+//
+//	diffuseOut = diffuseOut * 10.0;
+//
+//	diffuseOut = floor(diffuseOut * Steps) / Steps;
+//
+//	//edge outlines
+//	float edge = (dot(V, WorldNormal) < 0.1) ? 0.0 : 1.0;
+//
+//	output = vec4(texture(u_Material.TextureMap, inUV) * diffuseOut * edge, 1.0);
+
+	//float diffuse  = max(0, dot(inUV, normal));
 
 	// Extract emissive from the material
 	emissive = texture(u_Material.EmissiveMap, inUV);

@@ -260,7 +260,7 @@ void DefaultSceneLayer::_CreateScene()
 
 #pragma region Material Creation
 		// Loading in a 1D LUT
-		Texture1D::Sptr toonLut = ResourceManager::CreateAsset<Texture1D>("luts/toon-1D.png"); 
+		Texture1D::Sptr toonLut = ResourceManager::CreateAsset<Texture1D>("luts/toon-1D-Goblin.png"); 
 		toonLut->SetWrap(WrapMode::ClampToEdge);
 
 		// Here we'll load in the cubemap, as well as a special shader to handle drawing the skybox
@@ -332,11 +332,13 @@ void DefaultSceneLayer::_CreateScene()
 		Material::Sptr toonMaterial = ResourceManager::CreateAsset<Material>(celShader);
 		{
 			toonMaterial->Name = "Toon"; 
-			toonMaterial->Set("u_Material.AlbedoMap", boxTexture);
+			//toonMaterial->Set("u_Material.AlbedoMap", boxTexture);
+			toonMaterial->Set("u_Material.AlbedoMap", goblinTex);
 			toonMaterial->Set("u_Material.NormalMap", normalMapDefault);
 			toonMaterial->Set("s_ToonTerm", toonLut);
 			toonMaterial->Set("u_Material.Shininess", 0.1f); 
-			toonMaterial->Set("u_Material.Steps", 8);
+			toonMaterial->Set("u_Material.Steps", 4);
+			//toonMaterial->Set("u_Material.", )
 		}
 
 
@@ -490,6 +492,8 @@ void DefaultSceneLayer::_CreateScene()
 			GameObject::Sptr light = scene->CreateGameObject("Light");
 			light->SetPostion(glm::vec3(glm::diskRand(25.0f), 1.0f));
 			lightParent->AddChild(light);
+
+			toonMaterial->Set("u_Material.LightPos", light->GetPosition());
 
 			Light::Sptr lightComponent = light->Add<Light>();
 			lightComponent->SetColor(glm::linearRand(glm::vec3(0.0f), glm::vec3(1.0f)));
@@ -697,7 +701,9 @@ void DefaultSceneLayer::_CreateScene()
 			// Create and attach a renderer for the monkey
 			RenderComponent::Sptr renderer = goblin1->Add<RenderComponent>();
 			renderer->SetMesh(newGoblinMesh);
-			renderer->SetMaterial(goblinMaterial);
+			//renderer->SetMaterial(goblinMaterial);
+			toonMaterial->Set("u_Material.WorldPos", goblin1->GetPosition());
+			renderer->SetMaterial(toonMaterial);
 
 			//RigidBody::Sptr goblinRB = goblin1->Add<RigidBody>(RigidBodyType::Dynamic);
 			//goblinRB->AddCollider(BoxCollider::Create())->SetPosition(glm::vec3(0.f));
@@ -738,7 +744,8 @@ void DefaultSceneLayer::_CreateScene()
 
 			RenderComponent::Sptr renderer = goblinAttack->Add<RenderComponent>();
 			renderer->SetMesh(goblinAttackMesh);
-			renderer->SetMaterial(goblinAttackMaterial); //needs
+			//renderer->SetMaterial(goblinAttackMaterial); //needs
+			renderer->SetMaterial(toonMaterial);
 
 			enemiesParent->AddChild(goblinAttack);
 		};

@@ -309,7 +309,7 @@ void ImGuiDebugLayer::_RenderGameWindow()
 	// Draw pause button
 	if (ImGui::Button("||")) {
 		float newScale = Timing::TimeScale();
-		newScale = newScale > 1 ? 0 : 1;
+		newScale = newScale >= 1 ? 0 : 1;
 		Timing::SetTimeScale(newScale);
 	}
 
