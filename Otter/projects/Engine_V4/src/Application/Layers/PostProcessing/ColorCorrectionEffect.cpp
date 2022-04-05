@@ -19,7 +19,7 @@ ColorCorrectionEffect::ColorCorrectionEffect(bool defaultLut) :
 		{ ShaderPartType::Vertex, "shaders/vertex_shaders/fullscreen_quad.glsl" },
 		{ ShaderPartType::Fragment, "shaders/fragment_shaders/post_effects/color_correction.glsl" }
 	});
-
+	
 	if (defaultLut) {
 		Lut = ResourceManager::CreateAsset<Texture3D>("luts/cool.cube");
 	}

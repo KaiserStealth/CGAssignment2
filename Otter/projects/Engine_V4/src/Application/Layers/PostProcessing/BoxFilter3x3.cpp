@@ -18,7 +18,7 @@ BoxFilter3x3::BoxFilter3x3() :
 
 	_shader = ResourceManager::CreateAsset<ShaderProgram>(std::unordered_map<ShaderPartType, std::string>{
 		{ ShaderPartType::Vertex, "shaders/vertex_shaders/fullscreen_quad.glsl" },
-		{ ShaderPartType::Fragment, "shaders/fragment_shaders/post_effects/box_filter_3.glsl" }
+		{ ShaderPartType::Fragment, "shaders/fragment_shaders/post_effects/film_grain.glsl" }
 	});
 }
 
@@ -27,38 +27,11 @@ BoxFilter3x3::~BoxFilter3x3() = default;
 void BoxFilter3x3::Apply(const Framebuffer::Sptr& gBuffer)
 {
 	_shader->Bind(); 
-	_shader->SetUniform("u_Filter", Filter, 9); 
-	_shader->SetUniform("u_PixelSize", glm::vec2(1.0f) / (glm::vec2)gBuffer->GetSize()); 
 }
 
 void BoxFilter3x3::RenderImGui()
 {
 	ImGui::PushID(this);
-
-	ImGui::Columns(3); 
-	for (int iy = 0; iy < 3; iy++) { 
-		for (int ix = 0; ix < 3; ix++) {
-			ImGui::PushID(iy * 3 + ix);
-			ImGui::PushItemWidth(-1);
-			ImGui::InputFloat("", &Filter[iy * 3 + ix], 0.01f);
-			ImGui::PopItemWidth();
-			ImGui::PopID();
-			ImGui::NextColumn();
-		}
-	}
-	ImGui::Columns(1);
-
-	if (ImGui::Button("Normalize")) {
-		float sum = 0.0f;
-		for (int ix = 0; ix < 9; ix++) {
-			sum += Filter[ix];
-		}
-		float mult = sum == 0.0f ? 1 : 1.0f / sum;
-
-		for (int ix = 0; ix < 9; ix++) {
-			Filter[ix] *= mult;
-		}
-	}
 
 	float* temp = ImGui::GetStateStorage()->GetFloatRef(ImGui::GetID("###temp-filler"), 0.0f);
 	ImGui::PushItemWidth(ImGui::GetContentRegionAvailWidth() * 0.75f);
