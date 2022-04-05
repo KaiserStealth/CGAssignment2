@@ -86,6 +86,12 @@ public:
 	Texture2D(const std::string& filePath);
 	Texture2D(const Texture2DDescription& description);
 
+	void SetWrap(WrapMode value) {
+		_description.VerticalWrap = value;
+		glTextureParameteri(_rendererId, GL_TEXTURE_WRAP_S, *_description.VerticalWrap);
+
+	}
+
 	/// <summary>
 	/// Gets the internal format OpenGL is using for this texture
 	/// </summary>
