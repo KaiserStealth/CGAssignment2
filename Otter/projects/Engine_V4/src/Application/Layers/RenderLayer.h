@@ -4,12 +4,21 @@
 #include "Graphics/Buffers/UniformBuffer.h"
 #include "Graphics/ShaderProgram.h"
 #include "Graphics/VertexArrayObject.h"
+#include "Gameplay/InputEngine.h"
+#include "Graphics/Textures/Texture1D.h"
+
 
 #define MAX_LIGHTS 8
 
 ENUM_FLAGS(RenderFlags, uint32_t,
 	None = 0,
-	EnableColorCorrection = 1 << 0
+	EnableColorCorrection = 1 << 0,
+	EnableLights = 1<<1,
+	EnableSpecular = 1<<2,
+	EnableAmbient = 1<<3,
+	EnableRDiffuse = 1<<4,
+	EnableRSpec = 1<<5
+
 );
 
 class RenderLayer final : public ApplicationLayer {
@@ -100,6 +109,7 @@ public:
 	const Framebuffer::Sptr& GetGBuffer() const;
 
 	// Inherited from ApplicationLayer
+	virtual void OnUpdate() override;
 
 	virtual void OnAppLoad(const nlohmann::json& config) override;
 	virtual void OnPreRender() override;
@@ -108,6 +118,17 @@ public:
 	virtual void OnWindowResize(const glm::ivec2& oldSize, const glm::ivec2& newSize) override;
 
 protected:
+
+	bool enable_specular = true;
+	bool lights = true;
+	bool enable_ambient = true;
+	bool enable_ramp_d = false;
+	bool enable_ramp_s = false;
+
+	Texture1D::Sptr diffusewarp;
+	Texture1D::Sptr specularwarp;
+
+
 	Framebuffer::Sptr   _primaryFBO;
 	Framebuffer::Sptr   _lightingFBO;
 	Framebuffer::Sptr   _outputBuffer;
@@ -115,6 +136,7 @@ protected:
 	ShaderProgram::Sptr _clearShader;
 	ShaderProgram::Sptr _lightAccumulationShader;
 	ShaderProgram::Sptr _compositingShader;
+	ShaderProgram::Sptr _shadowShader;
 
 	VertexArrayObject::Sptr _fullscreenQuad;
 
@@ -130,6 +152,9 @@ protected:
 
 	const int LIGHTING_UBO_BINDING = 2;
 	UniformBuffer<LightingUboStruct>::Sptr _lightingUbo;
+
+	void _InitFrameUniforms();
+	void _RenderScene(const glm::mat4& view, const glm::mat4& projection);
 
 	void _AccumulateLighting();
 	void _Composite();

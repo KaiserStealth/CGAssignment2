@@ -106,7 +106,8 @@ bool ShaderProgram::LoadShaderPartFromFile(const char* path, ShaderPartType type
 bool ShaderProgram::Link() {
 
 	LOG_TRACE("Starting shader link:");
-	
+	GLenum err = glGetError();
+
 	// Attach all our shaders
 	for (auto& [type, id] : _handles) {
 		if (id != 0) {
@@ -117,6 +118,7 @@ bool ShaderProgram::Link() {
 
 	// Perform linking
 	glLinkProgram(_rendererId);
+	err = glGetError();
 
 	// Remove shader parts to save space (we can do this since we only needed the shader parts to compile an actual shader program)
 	for (auto& [type, id] : _handles) { 
@@ -127,6 +129,7 @@ bool ShaderProgram::Link() {
 	}
 	// Remove all the handles so we don't accidentally use them
 	_handles.clear();
+	err = glGetError();
 
 	GLint status = 0;
 	glGetProgramiv(_rendererId, GL_LINK_STATUS, &status);
@@ -198,6 +201,19 @@ void ShaderProgram::SetUniform(int location, const glm::ivec3* value, int count)
 }
 void ShaderProgram::SetUniform(int location, const glm::ivec4* value, int count) {
 	glProgramUniform4iv(_rendererId, location, count, glm::value_ptr(*value));
+}
+
+void ShaderProgram::SetUniform(int location, const uint32_t* value, int count) {
+	glProgramUniform1uiv(_rendererId, location, count, value);
+}
+void ShaderProgram::SetUniform(int location, const glm::uvec2* value, int count) {
+	glProgramUniform2uiv(_rendererId, location, count, glm::value_ptr(*value));
+}
+void ShaderProgram::SetUniform(int location, const glm::uvec3* value, int count) {
+	glProgramUniform3uiv(_rendererId, location, count, glm::value_ptr(*value));
+}
+void ShaderProgram::SetUniform(int location, const glm::uvec4* value, int count) {
+	glProgramUniform4uiv(_rendererId, location, count, glm::value_ptr(*value));
 }
 
 void ShaderProgram::SetUniform(int location, const bool* value, int count) {

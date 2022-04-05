@@ -48,6 +48,8 @@
 #include "Gameplay/Components/Light.h"
 #include "Gameplay/Components/EnemyMovement.h"
 #include "Gameplay/Components/CameraVanguard.h"
+#include "Gameplay/Components/ShadowCamera.h"
+
 
 // Audio
 #include "Gameplay/Components/AudioEngine.h"
@@ -291,6 +293,7 @@ void Application::_RegisterClasses()
 	ComponentManager::RegisterType<GuiText>();
 	ComponentManager::RegisterType<ParticleSystem>();
 	ComponentManager::RegisterType<Light>();
+	ComponentManager::RegisterType<ShadowCamera>();
 
 	ComponentManager::RegisterType<EnemyMovement>();
 	ComponentManager::RegisterType<CameraVanguard>();
